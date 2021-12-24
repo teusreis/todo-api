@@ -15,6 +15,8 @@ class TodoController extends Controller
 
         $query = Todo::query();
 
+        $query->where("user_id", auth()->id());
+
         if ($request->title) {
             $query->where('title', 'like', "%{$request->title}%");
         }
@@ -50,6 +52,8 @@ class TodoController extends Controller
     {
         $data = $request->validated();
 
+        $data["user_id"] = auth()->id();
+
         $todo = Todo::create($data);
 
         if (!$todo) {
@@ -68,11 +72,15 @@ class TodoController extends Controller
 
     public function show(Todo $todo)
     {
+        $this->authorize("view", $todo);
+
         return $todo;
     }
 
     public function update(StoreTodoRequest $request, Todo $todo)
     {
+        $this->authorize("update", $todo);
+
         $data = $request->validated();
 
         $todo->update($data);
@@ -86,6 +94,8 @@ class TodoController extends Controller
 
     public function toggle(Todo $todo)
     {
+        $this->authorize("update", $todo);
+
         $newStatus = $todo->status === 'completed'
             ? 'undone'
             : 'completed';

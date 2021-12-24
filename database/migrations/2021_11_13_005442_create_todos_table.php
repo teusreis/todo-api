@@ -19,7 +19,13 @@ class CreateTodosTable extends Migration
             $table->string('description')->nullable(true);
             $table->string('status')->default('completed');
             $table->date('expiration');
+            $table->foreignId("user_id");
             $table->timestamps();
+
+            $table->foreign("user_id")
+                ->references("id")
+                ->on("users")
+                ->cascadeOnDelete();
         });
     }
 
